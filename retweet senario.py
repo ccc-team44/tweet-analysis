@@ -107,7 +107,7 @@ def output_result(tweet_final, aurin_median, aurin_middle_class):
             'retweet number': tweet_final['retweet'][loc],
             'tweets number': tweet_final['count'][loc],
             'freq of retweet': tweet_final['freq of retweet'][loc],
-            'percentage of middle class': aurin_middle_class[loc],
+            'percentage of middle&upper class': aurin_middle_class[loc],
             'median age of earner': aurin_median['median age of earner'][loc]
         }
     return out
