@@ -2,7 +2,7 @@
 FROM python:3.8-slim-buster
 WORKDIR /app/analysis
 
-COPY requirements.txt /app/danalysis/requirements.txt
+COPY requirements.txt /app/analysis/requirements.txt
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
