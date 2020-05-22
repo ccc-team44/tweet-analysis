@@ -214,7 +214,7 @@ def output_result(aurin_final, tweet_final):
     return out
 
 
-def save_tweet(name, newdata):
+def save_tweet(name, newdata, couch):
     try:
         database = couch[name]
         for each in database:
@@ -240,7 +240,7 @@ def main():
     tweet_final = tweets_analysis(df)
     output = output_result(aurin_final, tweet_final)
     print('*********************Output*********************************')
-    save_tweet('lang_output', output)
+    save_tweet('lang_output', output, couch)
 
 
 if __name__ == "__main__":

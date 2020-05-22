@@ -113,7 +113,7 @@ def output_result(tweet_final, aurin_median, aurin_middle_class):
     return out
 
 
-def save_tweet(name, newdata):
+def save_tweet(name, newdata, couch):
     try:
         database = couch[name]
         for each in database:
@@ -138,7 +138,7 @@ def main():
     tweet_final = twitter_data_analysis(res)
     output = output_result(tweet_final, aurin_median, aurin_middle_class)
     print('*********************Output*********************************')
-    save_tweet('retweet_output', output)
+    save_tweet('retweet_output', output, couch)
 
 
 if __name__ == "__main__":
