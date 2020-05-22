@@ -19,6 +19,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
   </component>
   <component name="ProjectId" id="1cFt8LCEVZInrekFhPWQfnDtAhs" />
   <component name="ProjectViewState">
@@ -41,18 +42,33 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1590136009073</updated>
-      <workItem from="1590136010554" duration="1464000" />
+      <workItem from="1590136010554" duration="2296000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="WindowStateProjectService">
     <state x="744" y="369" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1590136681248">
       <screen x="0" y="23" width="2560" height="1369" />
     </state>
     <state x="744" y="369" key="#com.intellij.execution.impl.EditConfigurationsDialog/-3008.-229.3008.1669/0.23.2560.1369@0.23.2560.1369" timestamp="1590136681248" />
+    <state x="100" y="123" width="2360" height="1169" key="DiffContextDialog" timestamp="1590137583682">
+      <screen x="0" y="23" width="2560" height="1369" />
+    </state>
+    <state x="100" y="123" width="2360" height="1169" key="DiffContextDialog/-3008.-229.3008.1669/0.23.2560.1369@0.23.2560.1369" timestamp="1590137583682" />
     <state x="781" y="346" key="SettingsEditor" timestamp="1590136537585">
       <screen x="0" y="23" width="2560" height="1369" />
     </state>

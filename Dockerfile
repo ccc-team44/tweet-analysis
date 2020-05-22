@@ -14,4 +14,4 @@ RUN apt-get update \
 
 COPY . /app/analysis
 
-CMD ['python', 'main.py']
+CMD ["python", "main.py"]
