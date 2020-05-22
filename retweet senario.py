@@ -104,13 +104,27 @@ def output_result(tweet_final, aurin_median, aurin_middle_class):
     out = {}
     for loc in tweet_final.index:
         out[loc] = {
-            'retweet number': tweet_final['retweet'][loc],
-            'tweets number': tweet_final['count'][loc],
-            'freq of retweet': tweet_final['freq of retweet'][loc],
-            'percentage of middle&upper class': aurin_middle_class[loc],
-            'median age of earner': aurin_median['median age of earner'][loc]
+            'retweet number': str('%d' % tweet_final['retweet'][loc]),
+            'tweets number': str('%d' % tweet_final['count'][loc]),
+            'freq of retweet': str('%.3f' % tweet_final['freq of retweet'][loc]),
+            'percentage of middle&upper class': str('%.1f' % aurin_middle_class[loc]) + '%',
+            'median age of earner': str('%d' % aurin_median['median age of earner'][loc])
         }
     return out
+
+
+def save_tweet(name, newdata):
+    try:
+        database = couch[name]
+        for each in database:
+            _rev = database[each].rev
+            newdata['_rev'] = _rev
+            newdata['_id'] = each
+            database.save(newdata)
+    except:
+        print("Creating database", name)
+        database = couch.create(name)
+        database.save(newdata)
 
 
 if __name__ == '__main__':
@@ -124,4 +138,4 @@ if __name__ == '__main__':
     tweet_final = twitter_data_analysis(res)
     output = output_result(tweet_final, aurin_median, aurin_middle_class)
     print('*********************Output*********************************')
-    print(output)
+    save_tweet('retweet_output', output)

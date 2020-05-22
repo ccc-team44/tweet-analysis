@@ -186,32 +186,46 @@ def output_result(aurin_final, tweet_final):
                 out[loc] = []
                 out[loc].append({
                     'label': lang,
-                    'twitter': tweet_final.loc[loc, lang].value * 100,
-                    'aurin': aurin_final.loc[loc, lang] * 100
+                    'twitter': '%.4f' % (tweet_final.loc[loc, lang].value * 100) + '%',
+                    'aurin': '%.4f' % (aurin_final.loc[loc, lang] * 100) + '%'
                 })
 
             else:
                 out[loc].append({
                     'label': lang,
-                    'twitter': tweet_final.loc[loc, lang].value * 100,
-                    'aurin': aurin_final.loc[loc, lang] * 100
+                    'twitter': '%.4f' % (tweet_final.loc[loc, lang].value * 100) + '%',
+                    'aurin': '%.4f' % (aurin_final.loc[loc, lang] * 100) + '%'
                 })
         except:
             if loc not in out.keys():
                 out[loc] = []
                 out[loc].append({
                     'label': lang,
-                    'twitter': tweet_final.loc[loc, lang].value * 100,
+                    'twitter': '%.4f' % (tweet_final.loc[loc, lang].value * 100) + '%',
                     'aurin': 0
                 })
 
             else:
                 out[loc].append({
                     'label': lang,
-                    'twitter': tweet_final.loc[loc, lang].value * 100,
+                    'twitter': '%.4f' % (tweet_final.loc[loc, lang].value * 100) + '%',
                     'aurin': 0
                 })
     return out
+
+
+def save_tweet(name, newdata):
+    try:
+        database = couch[name]
+        for each in database:
+            _rev = database[each].rev
+            newdata['_rev'] = _rev
+            newdata['_id'] = each
+            database.save(newdata)
+    except:
+        print("Creating database", name)
+        database = couch.create(name)
+        database.save(newdata)
 
 
 if __name__ == '__main__':
@@ -226,4 +240,5 @@ if __name__ == '__main__':
     tweet_final = tweets_analysis(df)
     output = output_result(aurin_final, tweet_final)
     print('*********************Output*********************************')
-    print(output)
+    save_tweet('lang_output', output)
+
