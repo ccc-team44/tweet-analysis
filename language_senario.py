@@ -202,7 +202,7 @@ def output_result(aurin_final, tweet_final):
                 out[loc].append({
                     'label': lang,
                     'twitter': '%.4f' % (tweet_final.loc[loc, lang].value * 100),
-                    'aurin': '0.0%'
+                    'aurin': '0.0'
                 })
 
             else:
