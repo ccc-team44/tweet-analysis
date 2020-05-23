@@ -205,14 +205,13 @@ def format_stream_data(df):
 def save_out(name, newdata, couch):
     try:
         database = couch[name]
-        for each in database:
-            _rev = database[each].rev
-            newdata['_rev'] = _rev
-            newdata['_id'] = each
-            database.save(newdata)
+        newdata['_id'] = 'morrison'
+        newdata['_rev'] = database['morrison'].rev
+        database.save(newdata)
     except:
         print("Creating database", name)
         database = couch.create(name)
+        newdata['_id'] = 'morrison'
         database.save(newdata)
 
 
