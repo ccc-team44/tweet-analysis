@@ -107,7 +107,7 @@ def output_result(tweet_final, aurin_median, aurin_middle_class):
             'retweet number': str('%d' % tweet_final['retweet'][loc]),
             'tweets number': str('%d' % tweet_final['count'][loc]),
             'freq of retweet': str('%.3f' % tweet_final['freq of retweet'][loc]),
-            'percentage of middle&upper class': str('%.1f' % aurin_middle_class[loc]) + '%',
+            'percentage of middle&upper class': str('%.1f' % aurin_middle_class[loc]),
             'median age of earner': str('%d' % aurin_median['median age of earner'][loc])
         }
     return out
@@ -116,22 +116,22 @@ def output_result(tweet_final, aurin_median, aurin_middle_class):
 def save_tweet(name, newdata, couch):
     try:
         database = couch[name]
-        for each in database:
-            _rev = database[each].rev
-            newdata['_rev'] = _rev
-            newdata['_id'] = each
-            database.save(newdata)
+        newdata['_id'] = 'retweet'
+        newdata['_rev'] = database['retweet'].rev
+        database.save(newdata)
     except:
         print("Creating database", name)
         database = couch.create(name)
+        newdata['_id'] = 'retweet'
         database.save(newdata)
 
 
-def main():
+if __name__ == '__main__':
     print('*********************Aurin Data Analysis*********************************')
     aurin_median, aurin_middle_class = aurin_data_analysis()
     print('*********************Connecting to DataBase*********************************')
-    url = 'http://admin:1111@172.26.130.31:5984/'
+    #url = 'http://admin:1111@172.26.130.31:5984/'
+    url = 'http://admin:luo511437824@127.0.0.1:5984/'
     couch = connect_db(url)
     print('*********************Tweets Data Analysis*********************************')
     res = get_view('tweets', "sentiment/retweet", couch)
@@ -139,7 +139,3 @@ def main():
     output = output_result(tweet_final, aurin_median, aurin_middle_class)
     print('*********************Output*********************************')
     save_tweet('retweet_output', output, couch)
-
-
-if __name__ == "__main__":
-    main()
