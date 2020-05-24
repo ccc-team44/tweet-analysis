@@ -72,13 +72,17 @@ def format_data(df):
 
 def read_format_view(li, couch):
     final = []
+    #test_li = []
     for each_city in li:
         db = couch[each_city]
         res = db.view("Morrison/view2")
+        #res = db.view("morison/view2")
+        #for each in res:
+        #    test_li.append(each)
         df = pd.DataFrame(res)
         final.append(df)
-    for each in final:
-        each = format_data(each)
+    for idx in range(len(final)):
+        final[idx] = format_data(final[idx])
     for each in final[1:]:
         final[0] = final[0].append(each)
     final_data = final[0].copy()
@@ -104,7 +108,7 @@ def count_hashtag_by_city(df):
             for token in tag:
                 if token != '':
                     counter[token.lower()] += 1
-        dic[each[0]] = [key[0] for key in counter.most_common(6)]
+        dic[each[0]] = counter.most_common(6)
     return dic
 
 
@@ -123,13 +127,14 @@ def data_analysis(df, mon, stats, aurin_middle_class):
                     {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
                      'positive_rate': '%.4f' % float(group_percent[state, 'positive']),
                      'common_tag': dic[state],
-                     'percentage of middle&upper class': str('%.1f' % aurin_middle_class[state]) + '%'})
+                     'percentage of middle&upper class': '%.1f' % aurin_middle_class[state]})
             else:
                 stats[state] = []
                 stats[state].append(
                     {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
                      'positive_rate': '%.4f' % float(group_percent[state, 'positive']),
-                     'common_tag': dic[state]})
+                     'common_tag': dic[state],
+                     'percentage of middle&upper class': '%.1f' % aurin_middle_class[state]})
     return stats
 
 
@@ -221,6 +226,7 @@ def save_tweet(name, newdata, couch):
         database.save(newdata)
 
 
+
 def main():
     print('*********************Aurin Data Analysis*********************************')
     aurin_middle_class = aurin_data_analysis()
@@ -229,11 +235,9 @@ def main():
     couch = connect_todb(url)
     print('*********************Retrieving Old Tweets*********************************')
     #li = ['australiancapitalterritory_tweets']
-    li = ['australiancapitalterritory_tweets', 'northernterritory_tweets', 'newsouthwales_tweets', 'queensland_tweets',
-          'victoria_tweets', 'southaustralia_tweets', 'tasmania_tweets', 'westernaustralia_tweets']
+    li = ['australiancapitalterritory_tweets', 'northernterritory_tweets', 'newsouthwales_tweets', 'queensland_tweets', 'victoria_tweets', 'southaustralia_tweets', 'tasmania_tweets', 'westernaustralia_tweets']
     data = read_format_view(li, couch)
     month = [9, 10, 11, 12, 1, 2, 3, 4]
-    output = []
     stats = {}
     print('*********************Analyzing Data*********************************')
     for mon in month:
@@ -267,6 +271,26 @@ def main():
     print('*********************Saving Output*********************************')
     save_tweet('morrison_output', stats, couch)
 
+
+
+'''
+def main():
+    print('*********************Aurin Data Analysis*********************************')
+    aurin_middle_class = aurin_data_analysis()
+    print('*********************Connect to DataBase*********************************')
+    url = 'http://admin:1111@172.26.130.31:5984/'
+    couch = connect_todb(url)
+    print('*********************Retrieving Old Tweets*********************************')
+    li = ['australiancapitalterritory_tweets']
+    #li = ['newsouthwales_tweets', 'queensland_tweets', 'victoria_tweets']
+    data = read_format_view(li, couch)
+    month = [9, 10, 11, 12, 1, 2, 3, 4]
+    stats = {}
+    print('*********************Analyzing Data*********************************')
+    for mon in month:
+        stats = controller(mon, data, stats, aurin_middle_class)
+    print(stats)
+'''
 
 if __name__ == '__main__':
     main()
