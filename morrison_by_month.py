@@ -202,12 +202,18 @@ def format_stream_data(df):
     return df
 
 
-def save_out(name, newdata, couch):
+def save_tweet(name, newdata, couch):
     try:
         database = couch[name]
+        for _id in database:
+            if _id == 'morrison':
+                newdata['_id'] = 'morrison'
+                newdata['_rev'] = database['morrison'].rev
+                database.save(newdata)
+                return
         newdata['_id'] = 'morrison'
-        newdata['_rev'] = database['morrison'].rev
         database.save(newdata)
+
     except:
         print("Creating database", name)
         database = couch.create(name)
@@ -259,7 +265,7 @@ def main():
     print('*********************Analyzing Data*********************************')
     stats = data_analysis(df, mon=5, stats=stats, aurin_middle_class=aurin_middle_class)
     print('*********************Saving Output*********************************')
-    save_out('morrison_output_test', stats, couch)
+    save_tweet('morrison_output', stats, couch)
 
 
 if __name__ == '__main__':

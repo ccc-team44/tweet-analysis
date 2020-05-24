@@ -116,8 +116,13 @@ def output_result(tweet_final, aurin_median, aurin_middle_class):
 def save_tweet(name, newdata, couch):
     try:
         database = couch[name]
+        for _id in database:
+            if _id == 'retweet':
+                newdata['_id'] = 'retweet'
+                newdata['_rev'] = database['retweet'].rev
+                database.save(newdata)
+                return
         newdata['_id'] = 'retweet'
-        newdata['_rev'] = database['retweet'].rev
         database.save(newdata)
     except:
         print("Creating database", name)
