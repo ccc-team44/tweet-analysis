@@ -213,12 +213,19 @@ def output_result(aurin_final, tweet_final):
                 })
     return out
 
+
 def save_tweet(name, newdata, couch):
     try:
         database = couch[name]
+        for _id in database:
+            if _id == 'lang':
+                newdata['_id'] = 'lang'
+                newdata['_rev'] = database['lang'].rev
+                database.save(newdata)
+                return
         newdata['_id'] = 'lang'
-        newdata['_rev'] = database['lang'].rev
         database.save(newdata)
+
     except:
         print("Creating database", name)
         database = couch.create(name)
