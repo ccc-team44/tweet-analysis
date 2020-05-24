@@ -130,8 +130,7 @@ def main():
     print('*********************Aurin Data Analysis*********************************')
     aurin_median, aurin_middle_class = aurin_data_analysis()
     print('*********************Connecting to DataBase*********************************')
-    #url = 'http://admin:1111@172.26.130.31:5984/'
-    url = 'http://admin:luo511437824@127.0.0.1:5984/'
+    url = 'http://admin:1111@172.26.130.31:5984/'
     couch = connect_db(url)
     print('*********************Tweets Data Analysis*********************************')
     res = get_view('tweets', "sentiment/retweet", couch)
