@@ -226,7 +226,7 @@ def save_tweet(name, newdata, couch):
         database.save(newdata)
 
 
-if __name__ == '__main__':
+def main():
     print('*********************Aurin Data Analysis*********************************')
     aurin_final = aurin_data_analysis('LGA language spoken.json')
     print('*********************Connecting to DataBase*********************************')
@@ -240,3 +240,6 @@ if __name__ == '__main__':
     print('*********************Output*********************************')
     save_tweet('lang_output', output, couch)
 
+
+if __name__ == '__main__':
+    main()
