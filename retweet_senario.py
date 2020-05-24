@@ -126,7 +126,7 @@ def save_tweet(name, newdata, couch):
         database.save(newdata)
 
 
-if __name__ == '__main__':
+def main():
     print('*********************Aurin Data Analysis*********************************')
     aurin_median, aurin_middle_class = aurin_data_analysis()
     print('*********************Connecting to DataBase*********************************')
@@ -139,3 +139,7 @@ if __name__ == '__main__':
     output = output_result(tweet_final, aurin_median, aurin_middle_class)
     print('*********************Output*********************************')
     save_tweet('retweet_output', output, couch)
+
+    
+if __name__ == '__main__':
+    main()
