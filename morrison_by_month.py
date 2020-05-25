@@ -107,7 +107,7 @@ def count_hashtag_by_city(df):
         dic[each[0]] = counter.most_common(6)
     return dic
 
-'''
+
 def data_analysis(df, mon, stats, aurin_middle_class):
     df['sentiment'] = df['text'].apply(lambda x: predict_sentiment(x))
     group_data = df.groupby(['state', 'sentiment'])['text'].count()
@@ -241,6 +241,7 @@ def save_tweet(name, newdata, couch):
         newdata['_id'] = 'morrison'
         database.save(newdata)
 
+
 def main():
     print('*********************Aurin Data Analysis*********************************')
     aurin_middle_class = aurin_data_analysis()
@@ -271,7 +272,6 @@ def main():
     scomo = db.view("Morrison/scomo")
     temp = pd.DataFrame(auspol).append(pd.DataFrame(scomo))
     temp.reset_index(drop=True, inplace=True)
-
     for idx in range(len(temp)):
         if 'text' not in temp.loc[idx]['value'].keys():
             temp.drop(idx, inplace=True)
@@ -282,9 +282,7 @@ def main():
     print('*********************Analyzing Data*********************************')
     stats = data_analysis(df, mon=5, stats=stats, aurin_middle_class=aurin_middle_class)
     print('*********************Saving Output*********************************')
-
-    save_out('morrison_output_test', stats, couch)
-
+    save_tweet('morrison_output', stats, couch)
 
 
 if __name__ == '__main__':
