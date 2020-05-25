@@ -273,7 +273,6 @@ def main():
     print('*********************Retrieving Old Tweets*********************************')
     li = ['australiancapitalterritory_tweets', 'northernterritory_tweets', 'newsouthwales_tweets', 'queensland_tweets',
           'victoria_tweets', 'southaustralia_tweets', 'tasmania_tweets', 'westernaustralia_tweets']
-    li = ['tasmania_tweets']
     data = read_format_view(li, couch)
     month = [9, 10, 11, 12, 1, 2, 3, 4]
     stats = {}
