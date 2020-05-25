@@ -121,13 +121,14 @@ def data_analysis(df, mon, stats, aurin_middle_class):
                     {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
                      'positive_rate': '%.4f' % float(group_percent[state, 'positive']),
                      'common_tag': dic[state],
-                     'percentage of middle&upper class': str('%.1f' % aurin_middle_class[state]) + '%'})
+                     'percentage of middle&upper class': str('%.1f' % aurin_middle_class[state])})
             else:
                 stats[state] = []
                 stats[state].append(
                     {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
                      'positive_rate': '%.4f' % float(group_percent[state, 'positive']),
-                     'common_tag': dic[state]})
+                     'common_tag': dic[state],
+                     'percentage of middle&upper class': str('%.1f' % aurin_middle_class[state])})
     return stats
 
 
@@ -168,7 +169,6 @@ def main():
     print('*********************Retrieving Old Tweets*********************************')
     li = ['australiancapitalterritory_tweets', 'northernterritory_tweets', 'newsouthwales_tweets', 'queensland_tweets',
           'victoria_tweets', 'southaustralia_tweets', 'tasmania_tweets', 'westernaustralia_tweets']
-
     month = [9, 10, 11, 12, 1, 2, 3, 4]
 
     for each in li:
