@@ -259,6 +259,9 @@ def main():
     print('*********************Analyzing Data*********************************')
     for mon in month:
         stats = controller(mon, data, stats, aurin_middle_class)
+
+
+ '''  
     print('*********************Retrieving Location Tweet*********************************')
     li = ['sydney', 'melbourne', 'perth', 'adelaide', 'brisbane']
     df = pd.DataFrame()
@@ -281,10 +284,13 @@ def main():
     temp = format_stream_data(temp)
     temp.reset_index(drop=True, inplace=True)
     df = df.append(temp)
+    
     print('*********************Analyzing Data*********************************')
     stats = data_analysis(df, mon=5, stats=stats, aurin_middle_class=aurin_middle_class)
+    '''
     print('*********************Saving Output*********************************')
     save_tweet('morrison_output', stats, couch)
+    print(stats)
 
 
 if __name__ == '__main__':
