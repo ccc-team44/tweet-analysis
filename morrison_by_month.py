@@ -235,7 +235,7 @@ def save_out(name, newdata, couch):
         database.save(newdata)
 
 
-if __name__ == '__main__':
+def main():
     print('*********************Aurin Data Analysis*********************************')
     aurin_middle_class = aurin_data_analysis()
     print('*********************Connect to DataBase*********************************')
@@ -278,3 +278,7 @@ if __name__ == '__main__':
     stats = data_analysis(df, mon=5, stats=stats, aurin_middle_class=aurin_middle_class)
     print('*********************Saving Output*********************************')
     save_out('morrison_output_test', stats, couch)
+
+
+if __name__ == '__main__':
+    main()
