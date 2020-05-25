@@ -58,7 +58,6 @@ def connect_todb(url):
 
 def format_data(df):
     df.drop_duplicates('key', 'first', inplace=True)
-    df['city'] = df['value'].apply(lambda x: x['city'])
     df['state'] = df['value'].apply(lambda x: x['state'])
     df['hashtags'] = df['value'].apply(lambda x: x['hashtags'])
     df['date'] = df['value'].apply(lambda x: x['date'].split()[0])
@@ -72,13 +71,9 @@ def format_data(df):
 
 def read_format_view(li, couch):
     final = []
-    #test_li = []
     for each_city in li:
         db = couch[each_city]
-        res = db.view("Morrison/view2")
-        #res = db.view("morison/view2")
-        #for each in res:
-        #    test_li.append(each)
+        res = db.view("Morrison/view3")
         df = pd.DataFrame(res)
         final.append(df)
     for idx in range(len(final)):
@@ -114,7 +109,6 @@ def count_hashtag_by_city(df):
 
 def data_analysis(df, mon, stats, aurin_middle_class):
     df['sentiment'] = df['text'].apply(lambda x: predict_sentiment(x))
-    # df = df[df['sentiment']!= 'neural']
     group_data = df.groupby(['state', 'sentiment'])['text'].count()
     group_total = df.groupby(['state'])['text'].count()
     group_percent = group_data.div(group_total)
