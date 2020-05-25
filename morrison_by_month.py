@@ -119,59 +119,38 @@ def data_analysis(df, mon, stats, aurin_middle_class):
 
         if sentiment == 'negative':
             if state in stats.keys():
-                stats[state].append(
-                    {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
-                     'positive_rate': '%.4f' % abs(
-                         float(group_percent[state, 'neural']) - float(group_percent[state, sentiment])),
-                     'common_tag': dic[state],
-                     'percentage of middle&upper class': '%.1f' % aurin_middle_class[state]})
+
+                try:
+                    pos = float(group_percent[state, 'positive'])
+                    stats[state].append(
+                        {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
+                         'positive_rate': '%.4f' % pos,
+                         'common_tag': dic[state],
+                         'percentage of middle&upper class': str('%.1f' % aurin_middle_class[state])})
+                except:
+                    pos = float(0)
+                    stats[state].append(
+                        {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
+                         'positive_rate': '%.4f' % pos,
+                         'common_tag': dic[state],
+                         'percentage of middle&upper class': str('%.1f' % aurin_middle_class[state])})
             else:
                 stats[state] = []
-                stats[state].append(
-                    {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
-                     'positive_rate': '%.4f' % abs(
-                         float(group_percent[state, 'neural']) - float(group_percent[state, sentiment])),
-                     'common_tag': dic[state],
-                     'percentage of middle&upper class': '%.1f' % aurin_middle_class[state]})
-    return stats
-'''
+                try:
+                    pos = float(group_percent[state, 'positive'])
+                    stats[state].append(
+                        {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
+                         'positive_rate': '%.4f' % pos,
+                         'common_tag': dic[state],
+                         'percentage of middle&upper class': str('%.1f' % aurin_middle_class[state])})
+                except:
+                    pos = float(0)
+                    stats[state].append(
+                        {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
+                         'positive_rate': '%.4f' % pos,
+                         'common_tag': dic[state],
+                         'percentage of middle&upper class': str('%.1f' % aurin_middle_class[state])})
 
-def data_analysis(df, mon, stats, aurin_middle_class):
-    df['sentiment'] = df['text'].apply(lambda x: predict_sentiment(x))
-    group_data = df.groupby(['state', 'sentiment'])['text'].count()
-    group_total = df.groupby(['state'])['text'].count()
-    group_percent = group_data.div(group_total)
-    dic = count_hashtag_by_city(df)
-
-    for (state, sentiment) in group_percent.index:
-        if sentiment == 'negative':
-            if state in stats.keys():
-                if (state, 'positive') in group_percent.index:
-                    stats[state].append(
-                        {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
-                        'positive_rate': '%.4f' % (float(group_percent[state, 'positive'])),
-                        'common_tag': dic[state],
-                        'percentage of middle&upper class': '%.1f' % aurin_middle_class[state]})
-                else:
-                    stats[state].append(
-                        {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
-                        'positive_rate': '%.4f' % (float(0)),
-                        'common_tag': dic[state],
-                        'percentage of middle&upper class': '%.1f' % aurin_middle_class[state]})
-            else:
-                stats[state] = []
-                if (state, 'positive') in group_percent.index:
-                    stats[state].append(
-                        {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
-                        'positive_rate': '%.4f' % (float(group_percent[state, 'positive'])),
-                        'common_tag': dic[state],
-                        'percentage of middle&upper class': '%.1f' % aurin_middle_class[state]})
-                else:
-                    stats[state].append(
-                        {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
-                        'positive_rate': '%.4f' % (float(0)),
-                        'common_tag': dic[state],
-                        'percentage of middle&upper class': '%.1f' % aurin_middle_class[state]})
     return stats
 
 
@@ -262,8 +241,6 @@ def save_tweet(name, newdata, couch):
         newdata['_id'] = 'morrison'
         database.save(newdata)
 
-
-
 def main():
     print('*********************Aurin Data Analysis*********************************')
     aurin_middle_class = aurin_data_analysis()
@@ -305,7 +282,8 @@ def main():
     print('*********************Analyzing Data*********************************')
     stats = data_analysis(df, mon=5, stats=stats, aurin_middle_class=aurin_middle_class)
     print('*********************Saving Output*********************************')
-    save_tweet('morrison_output', stats, couch)
+
+    save_out('morrison_output_test', stats, couch)
 
 
 
