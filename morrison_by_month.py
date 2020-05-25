@@ -119,14 +119,16 @@ def data_analysis(df, mon, stats, aurin_middle_class):
             if state in stats.keys():
                 stats[state].append(
                     {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
-                     'positive_rate': '%.4f' % float(group_percent[state, 'positive']),
+                     'positive_rate': '%.4f' % abs(
+                         float(group_percent[state, 'neural']) - float(group_percent[state, sentiment])),
                      'common_tag': dic[state],
                      'percentage of middle&upper class': '%.1f' % aurin_middle_class[state]})
             else:
                 stats[state] = []
                 stats[state].append(
                     {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
-                     'positive_rate': '%.4f' % float(group_percent[state, 'positive']),
+                     'positive_rate': '%.4f' % abs(
+                         float(group_percent[state, 'neural']) - float(group_percent[state, sentiment])),
                      'common_tag': dic[state],
                      'percentage of middle&upper class': '%.1f' % aurin_middle_class[state]})
     return stats
@@ -220,7 +222,6 @@ def save_tweet(name, newdata, couch):
         database.save(newdata)
 
 
-
 def main():
     print('*********************Aurin Data Analysis*********************************')
     aurin_middle_class = aurin_data_analysis()
@@ -228,8 +229,8 @@ def main():
     url = 'http://admin:1111@172.26.130.31:5984/'
     couch = connect_todb(url)
     print('*********************Retrieving Old Tweets*********************************')
-    #li = ['australiancapitalterritory_tweets']
-    li = ['australiancapitalterritory_tweets', 'northernterritory_tweets', 'newsouthwales_tweets', 'queensland_tweets', 'victoria_tweets', 'southaustralia_tweets', 'tasmania_tweets', 'westernaustralia_tweets']
+    li = ['australiancapitalterritory_tweets', 'northernterritory_tweets', 'newsouthwales_tweets', 'queensland_tweets',
+          'victoria_tweets', 'southaustralia_tweets', 'tasmania_tweets', 'westernaustralia_tweets']
     data = read_format_view(li, couch)
     month = [9, 10, 11, 12, 1, 2, 3, 4]
     stats = {}
@@ -237,7 +238,6 @@ def main():
     for mon in month:
         stats = controller(mon, data, stats, aurin_middle_class)
     print('*********************Retrieving Location Tweet*********************************')
-    #li=['sydney']
     li = ['sydney', 'melbourne', 'perth', 'adelaide', 'brisbane']
     df = pd.DataFrame()
     for each_loc in li:
@@ -265,26 +265,6 @@ def main():
     print('*********************Saving Output*********************************')
     save_tweet('morrison_output', stats, couch)
 
-
-
-'''
-def main():
-    print('*********************Aurin Data Analysis*********************************')
-    aurin_middle_class = aurin_data_analysis()
-    print('*********************Connect to DataBase*********************************')
-    url = 'http://admin:1111@172.26.130.31:5984/'
-    couch = connect_todb(url)
-    print('*********************Retrieving Old Tweets*********************************')
-    li = ['australiancapitalterritory_tweets']
-    #li = ['newsouthwales_tweets', 'queensland_tweets', 'victoria_tweets']
-    data = read_format_view(li, couch)
-    month = [9, 10, 11, 12, 1, 2, 3, 4]
-    stats = {}
-    print('*********************Analyzing Data*********************************')
-    for mon in month:
-        stats = controller(mon, data, stats, aurin_middle_class)
-    print(stats)
-'''
 
 if __name__ == '__main__':
     main()
