@@ -77,8 +77,10 @@ def read_format_view(li, couch):
         df = pd.DataFrame(res)
         print(each_city, len(df))
         final.append(df)
-    for idx in range(len(final)):
-        final[idx] = format_data(final[idx])
+    for each in final:
+        each = format_data(each)
+    #for idx in range(len(final)):
+    #    final[idx] = format_data(final[idx])
     for each in final[1:]:
         final[0] = final[0].append(each)
     final_data = final[0].copy()
