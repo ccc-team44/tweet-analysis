@@ -58,7 +58,6 @@ def connect_todb(url):
 
 def format_data(df):
     df.drop_duplicates('key', 'first', inplace=True)
-    df['city'] = df['value'].apply(lambda x: x['city'])
     df['state'] = df['value'].apply(lambda x: x['state'])
     df['hashtags'] = df['value'].apply(lambda x: x['hashtags'])
     df['date'] = df['value'].apply(lambda x: x['date'].split()[0])
@@ -76,9 +75,10 @@ def read_format_view(li, couch):
         db = couch[each_city]
         res = db.view("Morrison/view3")
         df = pd.DataFrame(res)
+        print(each_city, len(df))
         final.append(df)
-    for each in final:
-        each = format_data(each)
+    for idx in range(len(final)):
+        final[idx] = format_data(final[idx])
     for each in final[1:]:
         final[0] = final[0].append(each)
     final_data = final[0].copy()
@@ -107,18 +107,19 @@ def count_hashtag_by_city(df):
         dic[each[0]] = counter.most_common(6)
     return dic
 
-
+'''
 def data_analysis(df, mon, stats, aurin_middle_class):
     df['sentiment'] = df['text'].apply(lambda x: predict_sentiment(x))
-    # df = df[df['sentiment']!= 'neural']
     group_data = df.groupby(['state', 'sentiment'])['text'].count()
     group_total = df.groupby(['state'])['text'].count()
     group_percent = group_data.div(group_total)
     dic = count_hashtag_by_city(df)
 
     for (state, sentiment) in group_percent.index:
+
         if sentiment == 'negative':
             if state in stats.keys():
+
                 try:
                     pos = float(group_percent[state, 'positive'])
                     stats[state].append(
@@ -149,6 +150,7 @@ def data_analysis(df, mon, stats, aurin_middle_class):
                          'positive_rate': '%.4f' % pos,
                          'common_tag': dic[state],
                          'percentage of middle&upper class': str('%.1f' % aurin_middle_class[state])})
+
     return stats
 
 
@@ -221,19 +223,23 @@ def format_stream_data(df):
     return df
 
 
-def save_out(name, newdata, couch):
+def save_tweet(name, newdata, couch):
     try:
         database = couch[name]
-        for each in database:
-            _rev = database[each].rev
-            newdata['_rev'] = _rev
-            newdata['_id'] = each
-            database.save(newdata)
+        for _id in database:
+            if _id == 'morrison':
+                newdata['_id'] = 'morrison'
+                newdata['_rev'] = database['morrison'].rev
+                database.save(newdata)
+                return
+        newdata['_id'] = 'morrison'
+        database.save(newdata)
+
     except:
         print("Creating database", name)
         database = couch.create(name)
+        newdata['_id'] = 'morrison'
         database.save(newdata)
-
 
 def main():
     print('*********************Aurin Data Analysis*********************************')
@@ -246,7 +252,6 @@ def main():
           'victoria_tweets', 'southaustralia_tweets', 'tasmania_tweets', 'westernaustralia_tweets']
     data = read_format_view(li, couch)
     month = [9, 10, 11, 12, 1, 2, 3, 4]
-    output = []
     stats = {}
     print('*********************Analyzing Data*********************************')
     for mon in month:
@@ -277,7 +282,9 @@ def main():
     print('*********************Analyzing Data*********************************')
     stats = data_analysis(df, mon=5, stats=stats, aurin_middle_class=aurin_middle_class)
     print('*********************Saving Output*********************************')
+
     save_out('morrison_output_test', stats, couch)
+
 
 
 if __name__ == '__main__':
