@@ -56,38 +56,6 @@ def connect_todb(url):
         print('error')
 
 
-def format_data(df):
-    df.drop_duplicates('key', 'first', inplace=True)
-    df['state'] = df['value'].apply(lambda x: x['state'])
-    df['hashtags'] = df['value'].apply(lambda x: x['hashtags'])
-    df['date'] = df['value'].apply(lambda x: x['date'].split()[0])
-    df['date'] = df['date'].apply(pd.Timestamp)
-    df['text'] = df['value'].apply(lambda x: x['text'])
-    del df['key']
-    del df['value']
-    del df['id']
-    return df
-
-
-def read_format_view(li, couch):
-    final = []
-    for each_city in li:
-        db = couch[each_city]
-        res = db.view("Morrison/view3")
-        df = pd.DataFrame(res)
-        print(each_city, len(df))
-        final.append(df)
-    for each in final:
-        each = format_data(each)
-    #for idx in range(len(final)):
-    #    final[idx] = format_data(final[idx])
-    for each in final[1:]:
-        final[0] = final[0].append(each)
-    final_data = final[0].copy()
-    final_data = final_data.reset_index(drop=True)
-    return final_data
-
-
 def predict_sentiment(sentence):
     sentiment = TextBlob(sentence)
     if sentiment.sentiment_assessments.polarity > 0:
@@ -118,48 +86,22 @@ def data_analysis(df, mon, stats, aurin_middle_class):
     dic = count_hashtag_by_city(df)
 
     for (state, sentiment) in group_percent.index:
-
         if sentiment == 'negative':
             if state in stats.keys():
-
-                try:
-                    pos = float(group_percent[state, 'positive'])
-                    stats[state].append(
-                        {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
-                         'positive_rate': '%.4f' % pos,
-                         'common_tag': dic[state],
-                         'percentage of middle&upper class': str('%.1f' % aurin_middle_class[state])})
-                except:
-                    pos = float(0)
-                    stats[state].append(
-                        {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
-                         'positive_rate': '%.4f' % pos,
-                         'common_tag': dic[state],
-                         'percentage of middle&upper class': str('%.1f' % aurin_middle_class[state])})
+                pos = float(group_percent[state, 'positive'])
+                stats[state].append(
+                    {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
+                     'positive_rate': '%.4f' % pos,
+                     'common_tag': dic[state],
+                     'percentage of middle&upper class': str('%.1f' % aurin_middle_class[state])})
             else:
                 stats[state] = []
-                try:
-                    pos = float(group_percent[state, 'positive'])
-                    stats[state].append(
-                        {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
-                         'positive_rate': '%.4f' % pos,
-                         'common_tag': dic[state],
-                         'percentage of middle&upper class': str('%.1f' % aurin_middle_class[state])})
-                except:
-                    pos = float(0)
-                    stats[state].append(
-                        {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
-                         'positive_rate': '%.4f' % pos,
-                         'common_tag': dic[state],
-                         'percentage of middle&upper class': str('%.1f' % aurin_middle_class[state])})
-
-    return stats
-
-
-def controller(mon, data, stats, aurin_middle_class):
-    stage_data = data[data['date'].apply(lambda x: x.month) == mon].copy()
-    stage_data.reset_index(drop=True, inplace=True)
-    stats = data_analysis(stage_data, mon, stats, aurin_middle_class)
+                pos = float(group_percent[state, 'positive'])
+                stats[state].append(
+                    {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
+                     'positive_rate': '%.4f' % pos,
+                     'common_tag': dic[state],
+                     'percentage of middle&upper class': str('%.1f' % aurin_middle_class[state])})
     return stats
 
 
@@ -236,7 +178,6 @@ def save_tweet(name, newdata, couch):
                 return
         newdata['_id'] = 'morrison'
         database.save(newdata)
-
     except:
         print("Creating database", name)
         database = couch.create(name)
@@ -247,26 +188,11 @@ def save_tweet(name, newdata, couch):
 def main():
     print('*********************Aurin Data Analysis*********************************')
     aurin_middle_class = aurin_data_analysis()
+
     print('*********************Connect to DataBase*********************************')
     url = 'http://admin:1111@172.26.130.31:5984/'
     couch = connect_todb(url)
-    print('*********************Retrieving Old Tweets*********************************')
-    li = ['australiancapitalterritory_tweets', 'northernterritory_tweets', 'newsouthwales_tweets', 'queensland_tweets',
-          'victoria_tweets', 'southaustralia_tweets', 'tasmania_tweets', 'westernaustralia_tweets']
-    data = read_format_view(li, couch)
-    month = [9, 10, 11, 12, 1, 2, 3, 4]
-    stats = {}
-    print('*********************Analyzing Data*********************************')
-    for mon in month:
-        stats = controller(mon, data, stats, aurin_middle_class)
-    print('*********************Saving Output*********************************')
-    save_tweet('morrison_output', stats, couch)
-    print(stats)
 
-
-
-
-    '''  
     print('*********************Retrieving Location Tweet*********************************')
     li = ['sydney', 'melbourne', 'perth', 'adelaide', 'brisbane']
     df = pd.DataFrame()
@@ -276,6 +202,7 @@ def main():
         scomo = db.view("Morrison/scomo")
         df = df.append(pd.DataFrame(auspol).append(pd.DataFrame(scomo)))
     df = format_newdata(df)
+
     print('*********************Retrieving Streaming Tweets*********************************')
     db = couch['tweets']
     auspol = db.view("Morrison/aupol")
@@ -285,14 +212,30 @@ def main():
     for idx in range(len(temp)):
         if 'text' not in temp.loc[idx]['value'].keys():
             temp.drop(idx, inplace=True)
+
     temp.reset_index(drop=True, inplace=True)
     temp = format_stream_data(temp)
     temp.reset_index(drop=True, inplace=True)
     df = df.append(temp)
-    
+    stats = {}
+
     print('*********************Analyzing Data*********************************')
     stats = data_analysis(df, mon=5, stats=stats, aurin_middle_class=aurin_middle_class)
-    '''
+
+    print('**************Fetching Old Tweets and Combine All Data***************')
+    db = couch['oldtweets_output']
+    final_res = {}
+    for _id in db:
+        print(_id)
+        doc = db[_id]
+        state = list(doc.keys())[2]
+        temp = doc[state]
+        temp.append(stats[state][0])
+        final_res[state] = temp
+
+    print('**************************Store to Database***************************')
+    save_tweet('morrison_output', final_res, couch)
+    print('******************************All Done*******************************')
 
 
 if __name__ == '__main__':
