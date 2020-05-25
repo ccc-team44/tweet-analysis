@@ -232,6 +232,7 @@ def main():
         temp = doc[state]
         temp.append(stats[state][0])
         final_res[state] = temp
+    print(final_res)
 
     print('**************************Store to Database***************************')
     save_tweet('morrison_output', final_res, couch)
