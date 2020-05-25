@@ -74,7 +74,7 @@ def read_format_view(li, couch):
     final = []
     for each_city in li:
         db = couch[each_city]
-        res = db.view("Morrison/view2")
+        res = db.view("Morrison/view3")
         df = pd.DataFrame(res)
         final.append(df)
     for each in final:
@@ -104,7 +104,7 @@ def count_hashtag_by_city(df):
             for token in tag:
                 if token != '':
                     counter[token.lower()] += 1
-        dic[each[0]] = [key[0] for key in counter.most_common(6)]
+        dic[each[0]] = counter.most_common(6)
     return dic
 
 
@@ -119,17 +119,36 @@ def data_analysis(df, mon, stats, aurin_middle_class):
     for (state, sentiment) in group_percent.index:
         if sentiment == 'negative':
             if state in stats.keys():
-                stats[state].append(
-                    {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
-                     'positive_rate': '%.4f' % float(group_percent[state, 'positive']),
-                     'common_tag': dic[state],
-                     'percentage of middle&upper class': str('%.1f' % aurin_middle_class[state]) + '%'})
+                try:
+                    pos = float(group_percent[state, 'positive'])
+                    stats[state].append(
+                        {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
+                         'positive_rate': '%.4f' % pos,
+                         'common_tag': dic[state],
+                         'percentage of middle&upper class': str('%.1f' % aurin_middle_class[state])})
+                except:
+                    pos = float(0)
+                    stats[state].append(
+                        {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
+                         'positive_rate': '%.4f' % pos,
+                         'common_tag': dic[state],
+                         'percentage of middle&upper class': str('%.1f' % aurin_middle_class[state])})
             else:
                 stats[state] = []
-                stats[state].append(
-                    {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
-                     'positive_rate': '%.4f' % float(group_percent[state, 'positive']),
-                     'common_tag': dic[state]})
+                try:
+                    pos = float(group_percent[state, 'positive'])
+                    stats[state].append(
+                        {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
+                         'positive_rate': '%.4f' % pos,
+                         'common_tag': dic[state],
+                         'percentage of middle&upper class': str('%.1f' % aurin_middle_class[state])})
+                except:
+                    pos = float(0)
+                    stats[state].append(
+                        {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
+                         'positive_rate': '%.4f' % pos,
+                         'common_tag': dic[state],
+                         'percentage of middle&upper class': str('%.1f' % aurin_middle_class[state])})
     return stats
 
 
@@ -223,7 +242,6 @@ if __name__ == '__main__':
     url = 'http://admin:1111@172.26.130.31:5984/'
     couch = connect_todb(url)
     print('*********************Retrieving Old Tweets*********************************')
-    #li = ['australiancapitalterritory_tweets']
     li = ['australiancapitalterritory_tweets', 'northernterritory_tweets', 'newsouthwales_tweets', 'queensland_tweets',
           'victoria_tweets', 'southaustralia_tweets', 'tasmania_tweets', 'westernaustralia_tweets']
     data = read_format_view(li, couch)
@@ -234,7 +252,6 @@ if __name__ == '__main__':
     for mon in month:
         stats = controller(mon, data, stats, aurin_middle_class)
     print('*********************Retrieving Location Tweet*********************************')
-    #li=['sydney']
     li = ['sydney', 'melbourne', 'perth', 'adelaide', 'brisbane']
     df = pd.DataFrame()
     for each_loc in li:
