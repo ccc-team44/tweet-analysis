@@ -75,6 +75,7 @@ def read_format_view(li, couch):
         db = couch[each_city]
         res = db.view("Morrison/view3")
         df = pd.DataFrame(res)
+        print(each_city, len(df))
         final.append(df)
     for idx in range(len(final)):
         final[idx] = format_data(final[idx])
@@ -106,7 +107,7 @@ def count_hashtag_by_city(df):
         dic[each[0]] = counter.most_common(6)
     return dic
 
-
+'''
 def data_analysis(df, mon, stats, aurin_middle_class):
     df['sentiment'] = df['text'].apply(lambda x: predict_sentiment(x))
     group_data = df.groupby(['state', 'sentiment'])['text'].count()
@@ -115,6 +116,7 @@ def data_analysis(df, mon, stats, aurin_middle_class):
     dic = count_hashtag_by_city(df)
 
     for (state, sentiment) in group_percent.index:
+
         if sentiment == 'negative':
             if state in stats.keys():
                 stats[state].append(
@@ -131,6 +133,45 @@ def data_analysis(df, mon, stats, aurin_middle_class):
                          float(group_percent[state, 'neural']) - float(group_percent[state, sentiment])),
                      'common_tag': dic[state],
                      'percentage of middle&upper class': '%.1f' % aurin_middle_class[state]})
+    return stats
+'''
+
+def data_analysis(df, mon, stats, aurin_middle_class):
+    df['sentiment'] = df['text'].apply(lambda x: predict_sentiment(x))
+    group_data = df.groupby(['state', 'sentiment'])['text'].count()
+    group_total = df.groupby(['state'])['text'].count()
+    group_percent = group_data.div(group_total)
+    dic = count_hashtag_by_city(df)
+
+    for (state, sentiment) in group_percent.index:
+        if sentiment == 'negative':
+            if state in stats.keys():
+                if (state, 'positive') in group_percent.index:
+                    stats[state].append(
+                        {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
+                        'positive_rate': '%.4f' % (float(group_percent[state, 'positive'])),
+                        'common_tag': dic[state],
+                        'percentage of middle&upper class': '%.1f' % aurin_middle_class[state]})
+                else:
+                    stats[state].append(
+                        {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
+                        'positive_rate': '%.4f' % (float(0)),
+                        'common_tag': dic[state],
+                        'percentage of middle&upper class': '%.1f' % aurin_middle_class[state]})
+            else:
+                stats[state] = []
+                if (state, 'positive') in group_percent.index:
+                    stats[state].append(
+                        {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
+                        'positive_rate': '%.4f' % (float(group_percent[state, 'positive'])),
+                        'common_tag': dic[state],
+                        'percentage of middle&upper class': '%.1f' % aurin_middle_class[state]})
+                else:
+                    stats[state].append(
+                        {'month': mon, 'negative_rate': '%.4f' % float(group_percent[state, sentiment]),
+                        'positive_rate': '%.4f' % (float(0)),
+                        'common_tag': dic[state],
+                        'percentage of middle&upper class': '%.1f' % aurin_middle_class[state]})
     return stats
 
 
@@ -222,6 +263,7 @@ def save_tweet(name, newdata, couch):
         database.save(newdata)
 
 
+
 def main():
     print('*********************Aurin Data Analysis*********************************')
     aurin_middle_class = aurin_data_analysis()
@@ -231,6 +273,7 @@ def main():
     print('*********************Retrieving Old Tweets*********************************')
     li = ['australiancapitalterritory_tweets', 'northernterritory_tweets', 'newsouthwales_tweets', 'queensland_tweets',
           'victoria_tweets', 'southaustralia_tweets', 'tasmania_tweets', 'westernaustralia_tweets']
+    li = ['tasmania_tweets']
     data = read_format_view(li, couch)
     month = [9, 10, 11, 12, 1, 2, 3, 4]
     stats = {}
@@ -264,6 +307,7 @@ def main():
     stats = data_analysis(df, mon=5, stats=stats, aurin_middle_class=aurin_middle_class)
     print('*********************Saving Output*********************************')
     save_tweet('morrison_output', stats, couch)
+
 
 
 if __name__ == '__main__':
