@@ -1,3 +1,5 @@
+import os
+
 import couchdb
 import pandas as pd
 import json
@@ -190,7 +192,10 @@ def main():
     aurin_middle_class = aurin_data_analysis()
 
     print('*********************Connect to DataBase*********************************')
-    url = 'http://admin:1111@172.26.130.31:5984/'
+    db_user = os.environ['COUCH_DB_USER']
+    db_password = os.environ['COUCH_DB_PASSWORD']
+    db_address = os.environ['COUCH_DB_ADDRESS']
+    url = f"http://{db_user}:{db_password}@{db_address}/"
     couch = connect_todb(url)
 
     print('*********************Retrieving Location Tweet*********************************')
